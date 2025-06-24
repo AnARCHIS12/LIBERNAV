@@ -1,8 +1,8 @@
 <!-- En-tête centré : titre, logo, badges -->
 <p align="center">
-  <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="120" height="120" style="margin-bottom:10px;" />
-  <br>
   <span style="display:block;font-size:2.5em;font-weight:bold;margin:10px 0 8px 0;">Libernav</span>
+  <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="72" height="72" style="margin-bottom:10px;" />
+  <br>
   <img src="https://img.shields.io/badge/exp%C3%A9rimental-en%20d%C3%A9veloppement-orange?style=for-the-badge" alt="Statut expérimental" />
   <img src="https://img.shields.io/badge/uniquement-Linux-blue?style=for-the-badge&logo=linux" alt="Linux uniquement" />
   <img src="https://img.shields.io/badge/licence-MIT-green?style=for-the-badge" alt="Licence MIT" />
