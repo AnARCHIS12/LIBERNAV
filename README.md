@@ -1,7 +1,7 @@
 <h1 align="center">Libernav</h1>
 
 <p align="center">
-  <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="64" height="64" />
+  <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="90" height="90" />
   <br>
   <img src="https://img.shields.io/badge/exp%C3%A9rimental-en%20d%C3%A9veloppement-orange?style=for-the-badge" alt="Statut expérimental" />
   <img src="https://img.shields.io/badge/uniquement--Linux-blue?style=for-the-badge&logo=linux" alt="Linux uniquement" />
