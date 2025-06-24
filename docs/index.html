@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libernav - Navigateur Linux minimaliste</title>
+  <link rel="icon" href="../public/libernav-rouge-noir.svg">
+  <style>
+    body {
+      font-family: 'SF Pro Display', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #181a20 0%, #2d0b0b 100%);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 60px auto 0 auto;
+      background: rgba(30,30,34,0.95);
+      border-radius: 28px;
+      box-shadow: 0 8px 40px #000b, 0 1.5px 0 #e53935 inset;
+      padding: 44px 32px 36px 32px;
+      text-align: center;
+      border: 2.5px solid #e53935;
+      position: relative;
+    }
+    .container:before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: -32px;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 8px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #e53935 0%, #fff 100%);
+      opacity: 0.7;
+    }
+    img.logo {
+      width: 100px;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 2px 12px #e5393555);
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 0 0 12px 0;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff 60%, #e53935 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .badges img {
+      height: 32px;
+      margin: 0 4px 10px 4px;
+      vertical-align: middle;
+      filter: grayscale(0.2) contrast(1.2);
+    }
+    .desc {
+      font-size: 1.18em;
+      color: #f5f5f5;
+      margin-bottom: 32px;
+      font-weight: 400;
+      text-shadow: 0 1px 0 #000a;
+    }
+    .syndical {
+      margin: 18px 0 32px 0;
+      font-size: 1.08em;
+      color: #e53935;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 0 #000a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .syndical svg {
+      width: 32px;
+      height: 32px;
+      vertical-align: middle;
+      filter: drop-shadow(0 0 6px #e53935cc);
+    }
+    .download {
+      margin: 32px 0 0 0;
+    }
+    .download a {
+      display: inline-block;
+      background: linear-gradient(90deg, #e53935 60%, #b71c1c 100%);
+      color: #fff;
+      font-weight: bold;
+      padding: 15px 36px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 1.13em;
+      margin: 0 10px 14px 10px;
+      box-shadow: 0 2px 12px #e5393533;
+      transition: background 0.2s, transform 0.2s;
+      border: none;
+    }
+    .download a:hover {
+      background: linear-gradient(90deg, #b71c1c 60%, #e53935 100%);
+      transform: translateY(-2px) scale(1.04);
+    }
+    .footer {
+      margin-top: 44px;
+      color: #888;
+      font-size: 1em;
+      letter-spacing: 0.2px;
+    }
+    .footer a { color: #bbb; text-decoration: underline; }
+    @media (max-width: 700px) { .container { margin: 20px 6px; padding: 18px 6px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="../public/libernav-rouge-noir.svg" alt="Libernav logo" class="logo">
+    <h1>Libernav</h1>
+    <div class="badges">
+      <img src="https://img.shields.io/badge/exp%C3%A9rimental-en%20d%C3%A9veloppement-orange?style=for-the-badge" alt="Statut expérimental">
+      <img src="https://img.shields.io/badge/uniquement-Linux-blue?style=for-the-badge&logo=linux" alt="Linux uniquement">
+      <img src="https://img.shields.io/badge/licence-MIT-green?style=for-the-badge" alt="Licence MIT">
+    </div>
+    <div class="desc">
+      Navigateur minimaliste, privé et open source pour Linux.<br>
+      Basé sur Electron, Vite et Tor.<br>
+      <b>Navigation privée par défaut, anti-trackers, intégration Tor.</b>
+    </div>
+    <div class="syndical">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="32" fill="#e53935"/>
+        <rect x="10" y="28" width="44" height="8" rx="2" fill="#fff"/>
+        <rect x="28" y="10" width="8" height="44" rx="2" fill="#fff"/>
+      </svg>
+      <span>Style inspiré par l’anarcho-syndicalisme</span>
+    </div>
+    <div class="download">
+      <a href="../dist/Libernav-0.0.0.AppImage" download>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="height:1.5em;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 4px #fff2);"><circle cx="16" cy="16" r="16" fill="#41b883"/><path d="M8 22L16 8l8 14h-4l-4-7-4 7z" fill="#fff"/></svg>
+        Télécharger AppImage
+      </a>
+      <a href="../dist/libernav_0.0.0_amd64.snap" download>
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/snapcraft.svg" alt="Snap" style="height:1.5em;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 4px #fff2);">Télécharger Snap
+      </a>
+      <a href="../dist/libernav-0.0.0.x86_64.rpm" download>
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/redhat.svg" alt="RPM" style="height:1.5em;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 4px #fff2);">Télécharger RPM
+      </a>
+    </div>
+    <div class="footer">
+      Libernav &copy; 2025 — <a href="https://github.com/AnARCHIS12/LIBERNAV">Code source</a>
+    </div>
+  </div>
+</body>
+</html>

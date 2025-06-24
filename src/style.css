@@ -1,0 +1,431 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #000000;
+    --bg-secondary: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --accent-color: #ff0000;
+    --accent-hover: #cc0000;
+    --border-color: #333333;
+    --hover-bg: #2a2a2a;
+}
+
+body {
+    font-family: 'Fira Sans', 'Liberation Sans', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.vanilla:hover {
+  filter: drop-shadow(0 0 2em #f7df1eaa);
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+button {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+/* Interface minimaliste anarcho-syndicaliste */
+#browser-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    border: 1px solid var(--border-color);
+}
+
+/* Barre de navigation */
+#nav-bar {
+    background-color: var(--bg-secondary);
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    height: 45px;
+    -webkit-app-region: drag;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.nav-controls {
+    display: flex;
+    gap: 4px;
+    -webkit-app-region: no-drag;
+}
+
+.nav-controls button {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-color);
+    padding: 4px 12px;
+    transition: all 0.2s ease;
+}
+
+.nav-controls button:hover {
+    background: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.address-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-color);
+    border-radius: 0;
+    padding: 4px 12px;
+    -webkit-app-region: no-drag;
+}
+
+#url-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 14px;
+    padding: 4px;
+    outline: none;
+}
+
+.nav-settings {
+    display: flex;
+    gap: 8px;
+    -webkit-app-region: no-drag;
+}
+
+/* Empêcher le drag sur les contrôles */
+.nav-controls, .address-bar, .nav-settings, button, input {
+    -webkit-app-region: no-drag;
+}
+
+/* Barre de statut */
+#status-bar {
+    background-color: var(--bg-secondary);
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 25px;
+    font-size: 12px;
+    border-top: 1px solid var(--accent-color);
+}
+
+#status-bar span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-color);
+}
+
+/* Menu de configuration */
+#config-menu {
+    position: absolute;
+    top: 45px;
+    right: 10px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--accent-color);
+    width: 300px;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+#config-menu.hidden {
+    display: none !important;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--accent-color);
+    background-color: var(--bg-primary);
+}
+
+.menu-header h2 {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.menu-header button {
+    padding: 4px 8px;
+    font-size: 16px;
+}
+
+.menu-content {
+    padding: 12px;
+}
+
+.setting-item {
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-item label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.setting-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent-color);
+}
+
+#clear-data {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-color);
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+#clear-data:hover {
+    background-color: var(--accent-color);
+}
+
+/* Contrôles de fenêtre */
+.window-controls {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+    -webkit-app-region: no-drag;
+}
+
+.window-controls button {
+    padding: 4px 8px;
+    font-size: 16px;
+    border: 1px solid var(--accent-color);
+    background-color: var(--bg-secondary);
+    min-width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+#minimize-btn:hover {
+    background-color: #666;
+}
+
+#maximize-btn:hover {
+    background-color: #444;
+}
+
+#close-btn:hover {
+    background-color: var(--accent-color);
+}
+
+/* Effet de clic */
+.window-controls button:active {
+    transform: scale(0.95);
+}
+
+/* Webview */
+webview {
+    flex: 1;
+    width: 100%;
+    height: calc(100vh - 70px);
+    border: none;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.nav-controls button:active {
+    animation: pulse 0.2s ease-in-out;
+}
+
+/* Animations pour les indicateurs de statut */
+@keyframes glow {
+    0% { box-shadow: 0 0 5px var(--accent-color); }
+    50% { box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color); }
+    100% { box-shadow: 0 0 5px var(--accent-color); }
+}
+
+#tor-status {
+    animation: glow 2s infinite;
+}
+
+#tor-status.disabled {
+    animation: none;
+    opacity: 0.5;
+}
+
+/* Style pour les boutons désactivés */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--border-color);
+}
+
+button:disabled:hover {
+    background-color: var(--bg-secondary);
+    transform: none;
+}
+
+/* Menu des moteurs de recherche */
+#search-engines-menu {
+    position: absolute;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--accent-color);
+    min-width: 200px;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+#search-engines-menu.hidden {
+    display: none;
+}
+
+.search-engine-item {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.search-engine-item:last-child {
+    border-bottom: none;
+}
+
+.search-engine-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.search-engine-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    margin: 0;
+    position: relative;
+    cursor: pointer;
+}
+
+.search-engine-item input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    animation: radioSelect 0.2s ease-in-out;
+}
+
+.search-engine-item label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+/* Bouton du moteur de recherche */
+#search-engine-btn {
+    background: none;
+    border: none;
+    border-right: 1px solid var(--accent-color);
+    padding: 6px 12px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+#search-engine-btn:hover {
+    background-color: var(--hover-bg);
+}
+
+@keyframes radioSelect {
+    0% { transform: scale(0); }
+    90% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

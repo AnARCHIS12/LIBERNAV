@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Libernav
+Comment=Navigateur privé et minimaliste
+Exec=/usr/bin/env bash -c 'cd /home/econar/Bureau/Libernav && npm start'
+Icon=libernav
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;

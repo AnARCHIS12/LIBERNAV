@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: file: https: http:">
+    <title>Libernav</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="browser-container">
+        <div id="nav-bar">
+            <img src="../public/libernav-rouge-noir.svg" alt="Libernav" style="height:32px;width:32px;margin-right:10px;vertical-align:middle;user-select:none;" draggable="false">
+            <div class="nav-controls">
+                <button id="back-btn" title="Retour">◀</button>
+                <button id="forward-btn" title="Suivant">▶</button>
+                <button id="reload-btn" title="Actualiser">↻</button>
+            </div>
+            <div class="address-bar">
+                <button id="search-engine-btn" title="Choisir le moteur de recherche">🦆</button>
+                <input type="text" id="url-input" placeholder="Rechercher ou entrer une adresse">
+                <button id="go-btn" title="Aller">▶</button>
+            </div>
+            <div class="nav-settings">
+                <button id="config-btn" title="Paramètres">⚙️</button>
+                <div class="window-controls">
+                    <button id="minimize-btn" title="Réduire">─</button>
+                    <button id="maximize-btn" title="Maximiser">□</button>
+                    <button id="close-btn" title="Fermer">×</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="status-bar">
+            <span id="tor-status" title="Statut Tor">🟢 Tor</span>
+            <span id="privacy-status" title="Mode privé">🟢 Privé</span>
+            <span id="tracker-status" title="Blocage des trackers">🟢 Anti-trackers</span>
+        </div>
+
+        <webview 
+            id="webview" 
+            allowpopups 
+            webpreferences="contextIsolation=true"
+            style="width:100%; height:calc(100vh - 70px);"
+        ></webview>
+        <!-- Menu de configuration caché par défaut -->
+        <div id="config-menu" class="hidden" style="position:fixed;top:60px;right:20px;z-index:1000;background:#222;color:#fff;padding:24px 20px 16px 20px;border-radius:10px;box-shadow:0 2px 16px #000a;min-width:260px;max-width:90vw;">
+            <button id="close-config" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#fff;font-size:1.2em;cursor:pointer;">✖</button>
+            <h3 style="margin-top:0">Paramètres</h3>
+            <div style="margin-bottom:10px;">
+                <label><input type="checkbox" id="tor-toggle"> Utiliser Tor</label>
+            </div>
+            <div style="margin-bottom:10px;">
+                <label><input type="checkbox" id="tracker-toggle" checked> Bloquer les trackers</label>
+            </div>
+            <div style="margin-bottom:10px;">
+                <label><input type="checkbox" id="dark-mode-toggle"> Mode sombre</label>
+            </div>
+            <div style="margin-bottom:10px;">
+                <button id="clear-data">Effacer les données</button>
+            </div>
+            <div style="font-size:0.9em;color:#aaa;">Libernav &copy; 2025</div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

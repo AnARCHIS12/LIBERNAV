@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libernav - Navigateur Libre</title>
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --accent-color: #ff0000;
+            --accent-hover: #cc0000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.4;
+            animation: slideUp 1s ease-out;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 40px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            animation: fadeIn 2s ease-out;
+        }
+
+        .quick-link {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border: 1px solid var(--accent-color);
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .quick-link:hover {
+            background: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+            padding: 20px;
+            animation: slideUp 1.5s ease-out;
+        }
+
+        .feature {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border: 1px solid var(--accent-color);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .manifesto {
+            margin-top: 40px;
+            text-align: center;
+            max-width: 800px;
+            padding: 20px;
+            border-top: 1px solid var(--accent-color);
+            animation: fadeIn 2.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Style anarchiste pour le texte sélectionné */
+        ::selection {
+            background: var(--accent-color);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">🏴 LIBERNAV</div>
+    
+    <div class="welcome-text">
+        Bienvenue sur Libernav, votre navigateur libre et sécurisé.
+        Naviguez sans compromis sur votre vie privée.
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <h3>Vie Privée</h3>
+            <p>Navigation privée par défaut, blocage des trackers et intégration Tor</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Performance</h3>
+            <p>Interface minimaliste et rapide, sans compromis sur les fonctionnalités</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">✊</div>
+            <h3>Liberté</h3>
+            <p>Open source et indépendant des grandes corporations</p>
+        </div>
+    </div>
+
+    <div class="quick-links">
+        <a href="https://searx.be" class="quick-link">
+            <h3>SearX</h3>
+            <p>Métamoteur de recherche libre</p>
+        </a>
+        <a href="https://www.torproject.org" class="quick-link">
+            <h3>Tor Project</h3>
+            <p>Pour plus d'anonymat</p>
+        </a>
+        <a href="https://www.eff.org" class="quick-link">
+            <h3>EFF</h3>
+            <p>Défense des libertés numériques</p>
+        </a>
+        <a href="https://www.privacytools.io" class="quick-link">
+            <h3>Privacy Tools</h3>
+            <p>Outils pour la vie privée</p>
+        </a>
+    </div>
+
+    <div class="manifesto">
+        <h2>Manifeste</h2>
+        <p>Libernav est plus qu'un navigateur, c'est un outil de résistance numérique. 
+        Nous croyons en un web libre, décentralisé et respectueux des droits fondamentaux.</p>
+    </div>
+</body>
+</html>

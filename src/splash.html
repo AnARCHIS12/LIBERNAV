@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Démarrage Libernav</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #d32d2d 0%, #111 100%);
+      color: #fff;
+      font-family: 'Fira Sans', Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .logo {
+      width: 96px;
+      height: 96px;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 2px 16px #000a);
+      user-select: none;
+    }
+    .title {
+      font-size: 2.2em;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 8px #000a;
+    }
+    .subtitle {
+      font-size: 1.1em;
+      color: #eee;
+      margin-bottom: 30px;
+      text-shadow: 0 1px 4px #000a;
+    }
+    .loader {
+      border: 4px solid #fff2;
+      border-top: 4px solid #fff;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 18px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .footer {
+      position: absolute;
+      bottom: 18px;
+      left: 0;
+      width: 100vw;
+      text-align: center;
+      color: #fff8;
+      font-size: 0.95em;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <img src="../public/libernav-rouge-noir.svg" alt="Logo Libernav" class="logo" draggable="false">
+  <div class="title">Libernav</div>
+  <div class="subtitle">Navigateur privé, minimaliste &amp; syndicaliste</div>
+  <div class="loader"></div>
+  <div class="footer">Démarrage en cours...</div>
+</body>
+</html>
