@@ -53,7 +53,7 @@
 2. <b>Cloner le dépôt</b>
 
    ```bash
-   git clone <url-du-repo>
+   git clone https://github.com/AnARCHIS12/LIBERNAV
    cd Libernav
    ```
 
