@@ -1,7 +1,7 @@
-<!-- En-tête centré : titre, logo, badges -->
+# Libernav
+
 <p align="center">
-  <span style="display:block;font-size:2.2em;font-weight:700;margin:10px 0 8px 0;line-height:1.1;letter-spacing:1px;">Libernav</span>
-  <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="64" height="64" style="margin:8px 0 12px 0;display:block;" />
+  <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="64" height="64" />
   <br>
   <img src="https://img.shields.io/badge/exp%C3%A9rimental-en%20d%C3%A9veloppement-orange?style=for-the-badge" alt="Statut expérimental" />
   <img src="https://img.shields.io/badge/uniquement--Linux-blue?style=for-the-badge&logo=linux" alt="Linux uniquement" />
@@ -83,4 +83,3 @@
 ## Licence
 
 MIT
-# LIBERNAV
