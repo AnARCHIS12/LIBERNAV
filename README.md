@@ -1,4 +1,4 @@
-# Libernav
+<h1 align="center">Libernav</h1>
 
 <p align="center">
   <img src="public/libernav-rouge-noir.svg" alt="Libernav logo" width="64" height="64" />
