@@ -26,6 +26,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
         clearBrowsingData: () => ipcRenderer.invoke('clear-browsing-data')
     },
     
+    // Extensions
+    extensions: {
+        install: async (filePath) => ipcRenderer.invoke('install-extension', filePath),
+        list: async () => ipcRenderer.invoke('list-extensions'),
+        remove: async (filename) => ipcRenderer.invoke('remove-extension', filename),
+        listStore: async () => ipcRenderer.invoke('list-store-extensions'),
+        installFromStore: async (filename) => ipcRenderer.invoke('install-store-extension', filename),
+    },
+    
     clearBrowsingData: () => ipcRenderer.invoke('clear-browsing-data')
 });
 

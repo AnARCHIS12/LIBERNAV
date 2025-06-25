@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeConfigBtn = document.getElementById('close-config');
     const searchEngineBtn = document.getElementById('search-engine-btn');
     const searchEnginesMenu = document.getElementById('search-engines-menu');
+    const extensionsBtn = document.getElementById('extensions-btn');
+    const extensionsMenu = document.getElementById('extensions-menu');
+    const closeExtensionsBtn = document.getElementById('close-extensions');
+    const translatorBtn = document.getElementById('translator-btn');
 
     // Configuration des moteurs de recherche
     const searchEngines = {
@@ -305,6 +309,159 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reloadBtn) {
         reloadBtn.addEventListener('click', () => {
             webview.reload();
+        });
+    }
+
+    // Gestion de l'installation d'extension
+    const installForm = document.getElementById('install-extension-form');
+    const extensionFileInput = document.getElementById('extension-file');
+    const installMsg = document.getElementById('extension-install-msg');
+    if (installForm && extensionFileInput) {
+        installForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            installMsg.textContent = '';
+            const file = extensionFileInput.files[0];
+            if (!file) {
+                installMsg.textContent = 'Aucun fichier sélectionné.';
+                return;
+            }
+            // Récupère le chemin local du fichier sélectionné
+            const filePath = file.path;
+            if (!filePath) {
+                installMsg.textContent = 'Impossible de lire le chemin du fichier.';
+                return;
+            }
+            installMsg.textContent = 'Installation...';
+            const result = await window.electronAPI.extensions.install(filePath);
+            installMsg.textContent = result.success ? 'Extension installée !' : 'Erreur : ' + result.message;
+        });
+    }
+
+    // Gestion de l'installation d'extension Chrome Store
+    const chromeStoreForm = document.getElementById('install-chrome-store-form');
+    const chromeStoreUrlInput = document.getElementById('chrome-store-url');
+    const chromeStoreMsg = document.getElementById('chrome-store-install-msg');
+    if (chromeStoreForm && chromeStoreUrlInput) {
+        chromeStoreForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            chromeStoreMsg.textContent = '';
+            const url = chromeStoreUrlInput.value.trim();
+            if (!url) {
+                chromeStoreMsg.textContent = 'Aucune URL fournie.';
+                return;
+            }
+            chromeStoreMsg.textContent = 'Téléchargement...';
+            const result = await window.electronAPI.chromeStore.install(url);
+            chromeStoreMsg.textContent = result.success ? 'Extension installée !' : 'Erreur : ' + result.message;
+        });
+    }
+
+    // Gestion de la liste des extensions JS installées
+    const jsExtensionsList = document.getElementById('js-extensions-list');
+    function refreshJsExtensionsList() {
+        if (!jsExtensionsList) return;
+        jsExtensionsList.innerHTML = '<span style="color:#aaa;font-size:0.97em;">Chargement…</span>';
+        if (window.electronAPI && window.electronAPI.extensions && window.electronAPI.extensions.list) {
+            window.electronAPI.extensions.list().then(list => {
+                if (!list || !Array.isArray(list) || list.length === 0) {
+                    jsExtensionsList.innerHTML = '<span style="color:#aaa;font-size:0.97em;">Aucune extension JS installée.</span>';
+                    return;
+                }
+                jsExtensionsList.innerHTML = '';
+                list.forEach(ext => {
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'space-between';
+                    div.style.gap = '10px';
+                    div.style.marginBottom = '4px';
+                    div.innerHTML = `<span style='font-size:1.05em;'>${ext}</span>`;
+                    const delBtn = document.createElement('button');
+                    delBtn.textContent = '🗑️';
+                    delBtn.title = 'Supprimer';
+                    delBtn.style.background = '#a33';
+                    delBtn.style.color = '#fff';
+                    delBtn.style.border = 'none';
+                    delBtn.style.borderRadius = '4px';
+                    delBtn.style.padding = '2px 8px';
+                    delBtn.style.cursor = 'pointer';
+                    delBtn.onclick = async () => {
+                        if (confirm(`Supprimer l’extension « ${ext} » ?`)) {
+                            await window.electronAPI.extensions.remove(ext);
+                            refreshJsExtensionsList();
+                        }
+                    };
+                    div.appendChild(delBtn);
+                    jsExtensionsList.appendChild(div);
+                });
+            });
+        } else {
+            jsExtensionsList.innerHTML = '<span style="color:#aaa;font-size:0.97em;">Non supporté.</span>';
+        }
+    }
+
+    // Gestion de la liste des extensions du store local
+    const storeExtensionsList = document.getElementById('store-extensions-list');
+    function refreshStoreExtensionsList() {
+        if (!storeExtensionsList) return;
+        storeExtensionsList.innerHTML = '<span style="color:#aaa;font-size:0.97em;">Chargement…</span>';
+        if (window.electronAPI && window.electronAPI.extensions && window.electronAPI.extensions.listStore) {
+            window.electronAPI.extensions.listStore().then(list => {
+                if (!list || !Array.isArray(list) || list.length === 0) {
+                    storeExtensionsList.innerHTML = '<span style="color:#aaa;font-size:0.97em;">Aucune extension disponible.</span>';
+                    return;
+                }
+                storeExtensionsList.innerHTML = '<b>Extensions disponibles :</b>';
+                list.forEach(ext => {
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'space-between';
+                    div.style.gap = '10px';
+                    div.style.marginBottom = '4px';
+                    div.innerHTML = `<span style='font-size:1.05em;'>${ext.replace('.js','')}</span>`;
+                    const installBtn = document.createElement('button');
+                    installBtn.textContent = 'Installer';
+                    installBtn.title = 'Installer cette extension';
+                    installBtn.style.background = 'var(--accent-color)';
+                    installBtn.style.color = '#fff';
+                    installBtn.style.border = 'none';
+                    installBtn.style.borderRadius = '4px';
+                    installBtn.style.padding = '2px 10px';
+                    installBtn.style.cursor = 'pointer';
+                    installBtn.onclick = async () => {
+                        await window.electronAPI.extensions.installFromStore(ext);
+                        refreshJsExtensionsList();
+                    };
+                    div.appendChild(installBtn);
+                    storeExtensionsList.appendChild(div);
+                });
+            });
+        } else {
+            storeExtensionsList.innerHTML = '<span style="color:#aaa;font-size:0.97em;">Non supporté.</span>';
+        }
+    }
+    // Rafraîchir la liste à l’ouverture du menu Extensions
+    if (extensionsBtn) {
+        extensionsBtn.addEventListener('click', () => {
+            refreshJsExtensionsList();
+            refreshStoreExtensionsList();
+            extensionsMenu.classList.toggle('hidden');
+        });
+    }
+    if (closeExtensionsBtn && extensionsMenu) {
+        closeExtensionsBtn.addEventListener('click', () => {
+            extensionsMenu.classList.add('hidden');
+        });
+    }
+
+    if (translatorBtn) {
+        // Si le panneau existe déjà (créé par l'extension), on le toggle
+        translatorBtn.addEventListener('click', () => {
+            const panel = document.getElementById('libernav-translator');
+            if (panel) {
+                panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+            }
         });
     }
 

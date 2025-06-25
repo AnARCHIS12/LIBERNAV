@@ -1,7 +1,7 @@
 {
   "name": "libernav",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "main.js",
   "author": {
     "name": "Libernav Team",
@@ -27,9 +27,11 @@
     "@ghostery/adblocker": "^2.8.0",
     "@ghostery/adblocker-electron": "^2.8.0",
     "cross-fetch": "^4.1.0",
+    "electron-chrome-extensions": "^4.8.0",
     "socks": "^2.8.5",
     "socks-proxy-agent": "^8.0.5",
-    "tor-request": "^3.1.0"
+    "tor-request": "^3.1.0",
+    "unzipper": "^0.12.3"
   },
   "build": {
     "appId": "com.libernav.app",
@@ -40,10 +42,15 @@
       "category": "Network",
       "target": [
         "AppImage",
-        "snap",
         "rpm"
       ],
       "maintainer": "Libernav Team <contact@libernav.org>"
+    },
+    "win": {
+      "icon": "icons/icon-512x512.png",
+      "target": [
+        "nsis"
+      ]
     }
   }
 }

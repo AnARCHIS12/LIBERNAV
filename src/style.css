@@ -417,6 +417,32 @@ button:disabled:hover {
     100% { transform: scale(1); }
 }
 
+/* Menu d'extensions */
+#extensions-bar {
+    display: none !important;
+}
+
+#extensions-menu {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: #23272e;
+    color: #fff;
+    padding: 24px 20px 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px #000a;
+    min-width: 320px;
+    max-width: 95vw;
+    max-height: 80vh;
+    overflow: auto;
+}
+
+#extensions-menu.hidden {
+    display: none !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

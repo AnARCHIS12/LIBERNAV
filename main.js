@@ -5,6 +5,7 @@ const { spawn } = require('child_process');
 const torConfig = require('./src/tor-config.js');
 const { ElectronBlocker } = require('@ghostery/adblocker-electron');
 const fetch = require('cross-fetch');
+const { addExtension } = require('electron-chrome-extensions');
 
 const TOR_SOCKS_PORT = 9050;
 let torProcess = null;
@@ -96,6 +97,7 @@ async function createWindow() {
                 preload: path.join(__dirname, 'preload.js')
             }
         });
+        mainWindow.setMenu(null); // Suppression de la barre de menu native
 
         // Désactiver l'ouverture automatique des outils de développement
         mainWindow.webContents.on('devtools-opened', () => {
@@ -112,13 +114,16 @@ async function createWindow() {
             mainWindow.show();
         });
 
-        // Une fois l'interface chargée, on initialise le webview avec la page d'accueil
+        // Affichage de la page d'accueil et injection des extensions JS à chaque chargement effectif du renderer
         mainWindow.webContents.on('did-finish-load', () => {
+            // 1. Affiche la page d'accueil dans le webview
             const homepagePath = path.join(__dirname, 'src', 'home.html');
             const homeUrl = `file://${homepagePath}`;
             mainWindow.webContents.executeJavaScript(`
                 document.getElementById('webview').src = "${homeUrl}";
             `);
+            // 2. Injecte les extensions JS
+            injectExtensionsInRenderer();
         });
 
         // Gestionnaires IPC pour les contrôles de fenêtre
@@ -343,6 +348,45 @@ async function createWindow() {
             updateAdBlocker();
         });
 
+        // Autoriser la géolocalisation avec confirmation utilisateur
+        session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+            if (permission === 'geolocation') {
+                dialog.showMessageBox({
+                    type: 'question',
+                    buttons: ['Autoriser', 'Refuser'],
+                    defaultId: 1,
+                    title: 'Géolocalisation',
+                    message: 'Une extension souhaite accéder à votre position pour afficher la météo locale. Autoriser ?'
+                }).then(result => {
+                    callback(result.response === 0); // 0 = Autoriser, 1 = Refuser
+                });
+            } else {
+                callback(false);
+            }
+        });
+
+        // Interception des ouvertures de fenêtres secondaires pour forcer l'icône Libernav
+        mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+            const child = new BrowserWindow({
+                width: 1000,
+                height: 800,
+                icon: path.join(__dirname, 'icons', 'icon-256x256.png'),
+                frame: true, // Barre Electron native
+                webPreferences: {
+                    nodeIntegration: false,
+                    contextIsolation: true,
+                    enableRemoteModule: false,
+                    webviewTag: true,
+                    preload: path.join(__dirname, 'preload.js'),
+                    session: session.fromPartition('persist:tor') // Force l'utilisation de Tor pour les fenêtres secondaires
+                }
+            });
+            child.setMenu(null); // Suppression de la barre de menu native
+            child.loadURL(url);
+            child.show();
+            return { action: 'deny' };
+        });
+
     } catch (error) {
         console.error('Erreur lors de la création de la fenêtre:', error);
         dialog.showErrorBox('Erreur', 
@@ -363,5 +407,172 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
+    }
+});
+
+const EXTENSIONS_DIR = path.join(__dirname, 'extensions');
+
+function loadExtensions() {
+    const fs = require('fs');
+    if (!fs.existsSync(EXTENSIONS_DIR)) return;
+    const files = fs.readdirSync(EXTENSIONS_DIR);
+    files.filter(f => f.endsWith('.js')).forEach(f => {
+        try {
+            require(path.join(EXTENSIONS_DIR, f));
+            console.log(`Extension chargée : ${f}`);
+        } catch (e) {
+            console.error(`Erreur lors du chargement de l'extension ${f} :`, e);
+        }
+    });
+}
+
+function loadChromeExtensions() {
+    const fs = require('fs');
+    const chromeExtDir = path.join(__dirname, 'chrome-extensions');
+    if (!fs.existsSync(chromeExtDir)) return;
+    const dirs = fs.readdirSync(chromeExtDir, { withFileTypes: true })
+        .filter(d => d.isDirectory())
+        .map(d => path.join(chromeExtDir, d.name));
+    dirs.forEach(dir => {
+        try {
+            addExtension(dir);
+            console.log('Extension Chrome chargée :', dir);
+        } catch (e) {
+            console.error('Erreur chargement extension Chrome :', dir, e);
+        }
+    });
+}
+
+// Injecte toutes les extensions JS dans le renderer (webview principal)
+function injectExtensionsInRenderer() {
+    if (!mainWindow) return;
+    const fs = require('fs');
+    if (!fs.existsSync(EXTENSIONS_DIR)) return;
+    const files = fs.readdirSync(EXTENSIONS_DIR).filter(f => f.endsWith('.js'));
+    files.forEach(f => {
+        const code = fs.readFileSync(path.join(EXTENSIONS_DIR, f), 'utf8');
+        mainWindow.webContents.executeJavaScript(code).then(() => {
+            console.log(`Extension injectée dans le renderer : ${f}`);
+        }).catch(e => {
+            console.error(`Erreur injection extension ${f} :`, e);
+        });
+    });
+}
+
+// Appeler le chargement des extensions au démarrage
+loadExtensions();
+app.whenReady().then(() => {
+    loadChromeExtensions();
+    // Injection des extensions JS dans le renderer après le chargement de la fenêtre
+    if (mainWindow) {
+        injectExtensionsInRenderer();
+    } else {
+        // Si la fenêtre n'est pas encore prête, attendre l'événement
+        app.on('browser-window-created', () => {
+            injectExtensionsInRenderer();
+        });
+    }
+});
+
+// Après installation d'une extension, injecter immédiatement dans le renderer
+ipcMain.handle('install-extension', async (event, filePath) => {
+    const fs = require('fs');
+    const destPath = path.join(EXTENSIONS_DIR, path.basename(filePath));
+    try {
+        fs.copyFileSync(filePath, destPath);
+        require(destPath); // Charger immédiatement côté main
+        injectExtensionsInRenderer(); // Injection côté renderer
+        return { success: true, message: 'Extension installée.' };
+    } catch (e) {
+        return { success: false, message: e.message };
+    }
+});
+
+// Handler unique pour l'installation depuis le store local
+ipcMain.handle('install-store-extension', async (event, filename) => {
+    try {
+        const storeDir = path.join(__dirname, 'extensions-store');
+        const fs = require('fs');
+        const src = path.join(storeDir, filename);
+        const dest = path.join(__dirname, 'extensions', filename);
+        if (fs.existsSync(src)) {
+            fs.copyFileSync(src, dest);
+            require(dest);
+            injectExtensionsInRenderer();
+            return { success: true };
+        }
+        return { success: false, message: 'Fichier introuvable' };
+    } catch (e) {
+        return { success: false, message: e.message };
+    }
+});
+ipcMain.handle('list-extensions', async () => {
+    try {
+        const fs = require('fs');
+        if (!fs.existsSync(EXTENSIONS_DIR)) return [];
+        return fs.readdirSync(EXTENSIONS_DIR).filter(f => f.endsWith('.js'));
+    } catch (e) {
+        return [];
+    }
+});
+ipcMain.handle('remove-extension', async (event, filename) => {
+    try {
+        const fs = require('fs');
+        const filePath = path.join(EXTENSIONS_DIR, filename);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            // Injection du code de nettoyage dans le renderer
+            if (mainWindow) {
+                // Convention : nom du fichier clock.js => window.removeLibernavClock()
+                const base = path.basename(filename, '.js');
+                // CamelCase : clock => LibernavClock, darkmode => LibernavDarkmode, notes => LibernavNotes
+                const fn = 'removeLibernav' + base.charAt(0).toUpperCase() + base.slice(1);
+                mainWindow.webContents.executeJavaScript(`window.${fn} && window.${fn}();`).then(() => {
+                    console.log(`Nettoyage de l'extension : ${fn}`);
+                }).catch(e => {
+                    console.warn(`Aucune fonction de nettoyage trouvée pour ${fn}`);
+                });
+            }
+            return { success: true };
+        }
+        return { success: false, message: 'Fichier introuvable' };
+    } catch (e) {
+        return { success: false, message: e.message };
+    }
+});
+ipcMain.handle('list-chrome-extensions', async () => {
+    try {
+        const chromeExtDir = path.join(__dirname, 'chrome-extensions');
+        const fs = require('fs');
+        if (!fs.existsSync(chromeExtDir)) return [];
+        return fs.readdirSync(chromeExtDir, { withFileTypes: true })
+            .filter(d => d.isDirectory())
+            .map(d => d.name);
+    } catch (e) {
+        return [];
+    }
+});
+ipcMain.handle('remove-chrome-extension', async (event, dirname) => {
+    try {
+        const chromeExtDir = path.join(__dirname, 'chrome-extensions');
+        const dirPath = path.join(chromeExtDir, dirname);
+        const fs = require('fs');
+        if (fs.existsSync(dirPath)) {
+            fs.rmSync(dirPath, { recursive: true, force: true });
+            return { success: true };
+        }
+        return { success: false, message: 'Dossier introuvable' };
+    } catch (e) {
+        return { success: false, message: e.message };
+    }
+});
+ipcMain.handle('list-store-extensions', async () => {
+    try {
+        const storeDir = path.join(__dirname, 'extensions-store');
+        const fs = require('fs');
+        if (!fs.existsSync(storeDir)) return [];
+        return fs.readdirSync(storeDir).filter(f => f.endsWith('.js'));
+    } catch (e) {
+        return [];
     }
 });
