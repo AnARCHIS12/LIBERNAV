@@ -5,6 +5,7 @@
   <br>
   <img src="https://img.shields.io/badge/exp%C3%A9rimental-en%20d%C3%A9veloppement-orange?style=for-the-badge" alt="Statut expérimental" />
   <img src="https://img.shields.io/badge/uniquement--Linux-blue?style=for-the-badge&logo=linux" alt="Linux uniquement" />
+  <img src="https://img.shields.io/badge/support-Windows-blue?style=for-the-badge&logo=windows" alt="Support Windows" />
   <img src="https://img.shields.io/badge/licence-MIT-green?style=for-the-badge" alt="Licence MIT" />
 </p>
 
@@ -68,6 +69,26 @@
    ```bash
    npm run dev
    ```
+
+</details>
+
+---
+
+## Installation (Windows)
+
+<details>
+<summary><b>Voir les étapes</b></summary>
+
+1. <b>Télécharger l’installateur Windows</b> (fichier `.exe`) depuis la page des releases ou le générer sous Linux avec Wine et NSIS :
+   - Prérequis : Wine, NSIS, Node.js >= 18, npm
+   - Commande :
+     ```bash
+     npm install
+     npm run dist -- --win
+     ```
+   - Le fichier `.exe` sera dans le dossier `dist/`.
+
+2. <b>Installer</b> : Double-cliquer sur le fichier `.exe` généré pour installer Libernav sous Windows.
 
 </details>
 
