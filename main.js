@@ -1,12 +1,17 @@
+const adblockEnabledSessions = new WeakSet();
 const { app, BrowserWindow, session, dialog, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const torConfig = require('./src/tor-config.js');
+const { ElectronBlocker } = require('@ghostery/adblocker-electron');
+const fetch = require('cross-fetch');
 
 const TOR_SOCKS_PORT = 9050;
 let torProcess = null;
 let mainWindow = null;
 let splashWindow = null;
+
+app.commandLine.appendSwitch('proxy-server', 'socks5://127.0.0.1:9050');
 
 async function startTor() {
     return new Promise((resolve, reject) => {
@@ -54,13 +59,18 @@ async function createWindow() {
         }
         console.log('Connexion Tor établie avec succès');
         
+        // Crée une session persistante pour Tor
+        const torSession = session.fromPartition('persist:tor');
+        await torSession.setProxy({
+            proxyRules: 'socks5://127.0.0.1:9050',
+            proxyBypassRules: 'localhost,127.0.0.1'
+        });
+
         // Crée une session temporaire pour la navigation privée
         const privateSession = session.fromPartition('temporary:private');
-        
-        // Configure le proxy Tor pour la session
         await privateSession.setProxy({
             proxyRules: 'socks5://127.0.0.1:9050',
-            proxyBypassRules: 'localhost'
+            proxyBypassRules: 'localhost,127.0.0.1'
         });
 
         // Détermination du chemin absolu de l'icône (préférence 256x256 pour Linux)
@@ -152,23 +162,56 @@ async function createWindow() {
         // Gestion dynamique du proxy Tor
         let torEnabled = true;
         let trackerBlockEnabled = true;
+        let adBlocker = null;
+        // Pour chaque session, on garde une référence au listener pour pouvoir le retirer proprement
+        const trackerListeners = new Map();
 
-        ipcMain.on('toggle-tor', async (event, enabled) => {
-            torEnabled = enabled;
-            const privateSession = session.fromPartition('temporary:private');
-            if (enabled) {
-                await privateSession.setProxy({
-                    proxyRules: 'socks5://127.0.0.1:9050',
-                    proxyBypassRules: 'localhost'
-                });
-                console.log('Proxy Tor activé');
-            } else {
-                await privateSession.setProxy({ proxyRules: '', proxyBypassRules: '' });
-                console.log('Proxy Tor désactivé');
+        // Initialisation du bloqueur Adblock (EasyList)
+        ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then(blocker => {
+            adBlocker = blocker;
+            // On active le blocage une seule fois par session (Ghostery ne supporte pas plusieurs activations)
+            if (!torSession.__adblockInjected) {
+                try {
+                    adBlocker.enableBlockingInSession(torSession);
+                    torSession.__adblockInjected = true;
+                } catch (err) {
+                    console.warn('Adblock déjà injecté sur torSession :', err.message);
+                }
             }
+            if (!privateSession.__adblockInjected) {
+                try {
+                    adBlocker.enableBlockingInSession(privateSession);
+                    privateSession.__adblockInjected = true;
+                } catch (err) {
+                    console.warn('Adblock déjà injecté sur privateSession :', err.message);
+                }
+            }
+            if (trackerBlockEnabled) {
+                console.log('Adblock activé sur toutes les sessions');
+            } else {
+                adBlocker.disableBlockingInSession(torSession);
+                adBlocker.disableBlockingInSession(privateSession);
+                console.log('Adblock désactivé sur toutes les sessions');
+            }
+        }).catch(err => {
+            console.error('Erreur lors de l\'initialisation d\'Adblocker :', err);
         });
 
-        // Blocage simple des trackers (filtrage par URL)
+        // Fonction pour activer/désactiver dynamiquement le blocage Adblock
+        // ATTENTION : enableBlockingInSession NE DOIT ÊTRE APPELÉ QU'UNE FOIS PAR SESSION !
+        // Pour réactiver après un disable, il faut recharger la page ou la session.
+        function updateAdBlocker() {
+            if (!adBlocker) return;
+            if (trackerBlockEnabled) {
+                // Impossible de réactiver dynamiquement, il faut recharger la page pour réappliquer le blocage
+                console.log('Adblock activé (rechargez la page pour réappliquer le blocage)');
+            } else {
+                adBlocker.disableBlockingInSession(torSession);
+                adBlocker.disableBlockingInSession(privateSession);
+                console.log('Adblock désactivé');
+            }
+        }
+
         const trackerPatterns = [
             '*://*.doubleclick.net/*',
             '*://*.google-analytics.com/*',
@@ -267,19 +310,37 @@ async function createWindow() {
             '*://*.zeotap.com/*'
         ];
 
+        // Fonction pour retirer le listener existant
+        function removeTrackerListener(sessionObj) {
+            const prevListener = trackerListeners.get(sessionObj);
+            if (prevListener) {
+                sessionObj.webRequest.onBeforeRequest(null, prevListener);
+                trackerListeners.delete(sessionObj);
+            }
+        }
+
+        // Fonction pour appliquer ou retirer dynamiquement le blocage
+        function applyTrackerBlock(sessionObj, label) {
+            removeTrackerListener(sessionObj);
+            if (trackerBlockEnabled) {
+                const listener = (details, callback) => {
+                    callback({ cancel: true });
+                };
+                sessionObj.webRequest.onBeforeRequest({ urls: trackerPatterns }, listener);
+                trackerListeners.set(sessionObj, listener);
+                console.log('Blocage des trackers activé pour', label);
+            } else {
+                console.log('Blocage des trackers désactivé pour', label);
+            }
+        }
+
+        // Initialisation au démarrage
+        applyTrackerBlock(torSession, 'persist:tor');
+        applyTrackerBlock(privateSession, 'temporary:private');
+
         ipcMain.on('toggle-tracker', (event, enabled) => {
             trackerBlockEnabled = enabled;
-            const privateSession = session.fromPartition('temporary:private');
-            privateSession.webRequest.onBeforeRequest(null); // retire tout filtre précédent
-            if (enabled) {
-                privateSession.webRequest.onBeforeRequest({ urls: trackerPatterns }, (details, callback) => {
-                    callback({ cancel: true });
-                });
-                console.log('Blocage des trackers activé');
-            } else {
-                // Pas de blocage
-                console.log('Blocage des trackers désactivé');
-            }
+            updateAdBlocker();
         });
 
     } catch (error) {

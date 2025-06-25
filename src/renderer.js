@@ -210,6 +210,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Synchronisation de l’état des toggles avec la réalité (Tor et anti-trackers)
+    if (torToggle) {
+        // Toujours coché et désactivé car Tor est obligatoire
+        torToggle.checked = true;
+        torToggle.disabled = true;
+        torToggle.title = "Tor est toujours activé pour la sécurité";
+    }
+    if (trackerToggle) {
+        trackerToggle.checked = true;
+        trackerToggle.disabled = false;
+        trackerToggle.title = "Active/désactive le blocage des trackers";
+    }
+
+    // Affichage visuel du statut anti-trackers dans la barre de statut
+    function updateTrackerStatusUI(enabled) {
+        const trackerStatus = document.getElementById('tracker-status');
+        if (trackerStatus) {
+            trackerStatus.innerHTML = enabled ? '🟢 Anti-trackers (ON)' : '🔴 Anti-trackers (OFF)';
+            trackerStatus.style.opacity = enabled ? '1' : '0.5';
+        }
+    }
+    // Initialisation de l’état visuel
+    updateTrackerStatusUI(true);
+
+    if (trackerToggle) {
+        trackerToggle.addEventListener('change', (e) => {
+            console.log('Tracker toggle:', e.target.checked);
+            updateTrackerStatusUI(e.target.checked);
+            if (window.electronAPI && window.electronAPI.config && window.electronAPI.config.toggleTracker) {
+                window.electronAPI.config.toggleTracker(e.target.checked);
+            }
+        });
+    }
+
     // Mise à jour de l'URL dans la barre d'adresse
     webview.addEventListener('did-navigate', (event) => {
         console.log('Navigation vers:', event.url);

@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Libernav
-Comment=Navigateur privé et minimaliste
-Exec=/usr/bin/env bash -c 'cd /home/econar/Bureau/Libernav && npm start'
-Icon=libernav
+Comment=Libernav - Navigateur Electron + Tor + Adblock
+Exec=/home/econar/Bureau/Libernav/dist/Libernav-0.0.0.AppImage
+Icon=/home/econar/Bureau/Libernav/icons/icon-256x256.png
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

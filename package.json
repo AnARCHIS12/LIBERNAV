@@ -24,6 +24,9 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@ghostery/adblocker": "^2.8.0",
+    "@ghostery/adblocker-electron": "^2.8.0",
+    "cross-fetch": "^4.1.0",
     "socks": "^2.8.5",
     "socks-proxy-agent": "^8.0.5",
     "tor-request": "^3.1.0"
@@ -35,7 +38,11 @@
     "linux": {
       "icon": "icons/icon-512x512.png",
       "category": "Network",
-      "target": ["AppImage", "snap", "rpm"],
+      "target": [
+        "AppImage",
+        "snap",
+        "rpm"
+      ],
       "maintainer": "Libernav Team <contact@libernav.org>"
     }
   }
